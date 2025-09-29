@@ -102,37 +102,27 @@ app.get('/pessoas', (req, res) => {
     res.status(200).json(pessoas);
 })
 
-app.post('/login', (req, res) => {
-    const { nome, login, senha, idade, irmaos, cidade, hobby } = req.body
+//POST: Criar uma pessoa no array pessoas
+app.post('/pessoas', (req, res) => {
+    const {nome, login, senha } = req.body
 
-    const pessoaExiste = pessoas.findIndex((p) => p.login === login)
-    if (pessoaExiste !== -1) {
-        res.status(404).json("pessoa não exite")
+    if(!nome || !senha || !login){
+        res.status(400).json('Faltou informação')
     }
 
-
-    if (!login || !senha || nome) {
-        res.status(400).json({
-            status: 404,
-            message: "Faltou informação"
-        })
+    const pessoaExiste = pessoas.find((p) => p.login === login)
+    if(pessoaExiste){
+        res.status(404).json("Pessoa existe")
     }
-
-    res.redirect('/itens.html')
 
     const novaPessoa = {
-        id: pessoas.lenght + 1,
-        nome: req.body.nome,
-        login:req.body.login,
-        senha:req.body.senha,
-        idade:req?.body?.idade,
-        irmaos:req?.body?.irmaos,
-        cidade:req?.body?.cidade,
-        hobby:req?.body?.hobby,
-
+        id: pessoas.length + 1,
+        nome,
+        login,
+        senha,
     }
-pessoas.push(novaPessoa)
-res.status(201).json("Pessa criada com sucesso!")
+    pessoas.push(novaPessoa)
+    res.status(201).json("Pessoa criada com sucesso!")
 })
 
 app.listen(PORT, () => {
