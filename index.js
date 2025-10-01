@@ -62,13 +62,21 @@ let pessoas = [
     },
 ];
 
+// ========================================
+// 3. ROTAS DA API (ENDPOINTS)
+// ========================================
+
+// ROTA DE TESTE
+// Método: GET
+// Endpoint: http://localhost:3000/
+// Função: Verificar se a API está funcionando
 app.get("/", (req, res) => {
     res.sendFile(path.join(publicDir, "login.html"));
 });
 
 app.post('/login', (req, res) => {
     const { login, senha } = req.body
-
+    console.log(req.login)
     //verifica se um dos campos vieram vazios
     if (!login || !senha) {
         res.status(404).json({
@@ -90,39 +98,65 @@ app.post('/login', (req, res) => {
             message: "Senha inválida"
         })
     }
+    console.log("tentando acessar")
     // res.status(200).json({ status: 200, message: "Login com sucesso" })
     res.redirect('/itens.html')
 })
-
 app.get('/itens.html', (req, res) => {
     res.sendFile(path.join(publicDir, 'itens.html'));
-});
+})
+
+
 
 app.get('/pessoas', (req, res) => {
     res.status(200).json(pessoas);
 })
 
-//POST: Criar uma pessoa no array pessoas
 app.post('/pessoas', (req, res) => {
-    const {nome, login, senha } = req.body
-
-    if(!nome || !senha || !login){
-        res.status(400).json('Faltou informação')
+    const { nome, login, senha, idade, irmaos, cidade, hobby } = req.body
+    if (!nome || !senha || !login) {
+        res.status(400).json("falta")
     }
 
-    const pessoaExiste = pessoas.find((p) => p.login === login)
-    if(pessoaExiste){
-        res.status(404).json("Pessoa existe")
+    const pessoaExiste = findIndex((p) => p.login === login)
+    if (pessoaExiste !== -1) {
+        res.status(404).json("Essa pessoa ja existe")
     }
-
     const novaPessoa = {
         id: pessoas.length + 1,
         nome,
         login,
         senha,
-    }
+     
+
+    };
     pessoas.push(novaPessoa)
-    res.status(201).json("Pessoa criada com sucesso!")
+    res.status(201).json("Pessoa criada com sucesso")
+
+})
+
+
+app.delete('/pessoa/:id', (req, res) => {
+    
+    const id = parseInt(req.params.id);
+    const pessoa = pessoas.find(p => p.id === id);
+
+    if (!pessoa) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    const index = pessoas.findIndex(p => p.id === id);
+
+    if (index !== -1) {
+        pessoas.splice(index, 1);
+        return res.status(200).json({ message: 'Usuário excluído com sucesso' });
+    } else {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+});
+
+app.put('/pessoas', (req, res) => {
+    
 })
 
 app.listen(PORT, () => {
