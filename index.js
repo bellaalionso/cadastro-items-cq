@@ -159,6 +159,50 @@ app.put('/pessoas', (req, res) => {
     
 })
 
+app.listen('/pessoas:hover', (req, res) => {
+ 
+});
+
+
+app.put('/pessoas/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { nome, login, senha, idade, irmaos, cidade, hobby } = req.body;
+
+    const index = pessoas.findIndex(p => p.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ message: "Pessoa não encontrada" });
+    }
+
+    
+    pessoas[index] = {
+        ...pessoas[index],
+        nome: nome ?? pessoas[index].nome,
+        login: login ?? pessoas[index].login,
+        senha: senha ?? pessoas[index].senha,
+        idade: idade ?? pessoas[index].idade,
+        irmaos: irmaos ?? pessoas[index].irmaos,
+        cidade: cidade ?? pessoas[index].cidade,
+        hobby: hobby ?? pessoas[index].hobby,
+    };
+
+    return res.status(200).json({ message: "Pessoa atualizada com sucesso", pessoa: pessoas[index] });
+});
+
+
+// Buscar uma pessoa pelo ID
+app.get('/pessoas/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const pessoa = pessoas.find(p => p.id === id);
+
+    if (!pessoa) {
+        return res.status(404).json({ message: "Pessoa não encontrada" });
+    }
+
+    return res.status(200).json(pessoa);
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
